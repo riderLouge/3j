@@ -1,6 +1,9 @@
 // Dialog.js
 import React, { useState } from "react";
 import styled from "styled-components";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import firestore from "../../firebase";
 
 const DialogContainer = styled.div`
   position: fixed;
@@ -39,6 +42,14 @@ const TextArea = styled.textarea`
   border-radius: 4px;
 `;
 
+const StyledDatePickerInput = styled.input`
+  border: 1px solid ${({ theme }) => theme.borderColor || 'rgb(204, 204, 204)'};
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  padding: 10px;
+`;
+
 const FileInput = styled.input`
   margin-bottom: 16px;
 `;
@@ -70,8 +81,8 @@ const Dialog = ({ open, onClose }) => {
   const [title, setTitle] = useState("");
   const [password, setPassword] = useState("");
   const [image, setImage] = useState(null);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [note, setNote] = useState("");
   const [includes, setIncludes] = useState("");
   const [itinerary, setItinerary] = useState("");
@@ -100,12 +111,12 @@ const Dialog = ({ open, onClose }) => {
     setImage(file);
   };
 
-  const handleStartDateChange = (e) => {
-    setStartDate(e.target.value);
+  const handleStartDateChange = (date) => {
+    setStartDate(date);
   };
 
-  const handleEndDateChange = (e) => {
-    setEndDate(e.target.value);
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
   };
 
   const handleNoteChange = (e) => {
@@ -124,7 +135,8 @@ const Dialog = ({ open, onClose }) => {
     setUploadDocument(e.target.value);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+  try {
     // Your logic for saving data and handling image upload
     console.log("Title:", title);
     console.log("Image:", image);
@@ -134,10 +146,31 @@ const Dialog = ({ open, onClose }) => {
     console.log("Includes:", includes);
     console.log("Itinerary:", itinerary);
     console.log("Upload Document:", uploadDocument);
+    console.log('Firestore instance:', firestore);
+
+    // Save data to Firestore
+    const tripRef = firestore.collection('trips');
+    const newTripDoc = await tripRef.add({
+      title,
+      image,
+      startDate,
+      endDate,
+      note,
+      includes,
+      itinerary,
+      uploadDocument,
+    });
+
+    console.log('Trip saved with ID:', newTripDoc.id);
 
     // Close the dialog
     onClose();
-  };
+  } catch (error) {
+    console.error('Error saving data:', error);
+    // Handle error appropriately (e.g., show an error message)
+  }
+};
+
 
   if (!open) return null;
 
@@ -172,20 +205,38 @@ const Dialog = ({ open, onClose }) => {
             Title:
             <Input type="text" value={title} onChange={handleTitleChange} />
           </InputLabel>
-
+          <div style={{display:"flex"}}>
+          <div style={{paddingRight:"10px"}}>
           <InputLabel>
             Start Date:
-            <Input
-              type="text"
-              value={startDate}
-              onChange={handleStartDateChange}
-            />
           </InputLabel>
+           
+             <DatePicker
+              selected={startDate}
+              onChange={handleStartDateChange}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Select start date"
+              customInput={<StyledDatePickerInput />}
+              />
+              
+            </div>
+          
 
+          <div>
           <InputLabel>
             End Date:
-            <Input type="text" value={endDate} onChange={handleEndDateChange} />
           </InputLabel>
+          
+            <DatePicker
+              selected={endDate}
+              onChange={handleEndDateChange}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Select a end date"
+              customInput={<StyledDatePickerInput />}
+              />
+              </div>
+            
+          </div>
 
           <InputLabel>
             Note:

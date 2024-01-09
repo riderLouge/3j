@@ -6,6 +6,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import Dialog from "./Dialog"; // Adjust the import path based on your project structure
+import { Button } from "@mui/material";
 
 const FooterContainer = styled.div`
   width: 100%;
@@ -59,7 +60,7 @@ const NavLink = styled.a`
   @media (max-width: 768px) {
     font-size: 1rem;
   }
-`;
+`;  
 
 const ContactInfo = styled.div`
   margin-top: 1.5rem;
@@ -118,6 +119,10 @@ function Footer() {
     setIsDialogOpen(false);
   };
 
+  const handleManageSiteClick= () =>{
+     setIsDialogOpen(true);
+  }
+
   return (
     <FooterContainer>
       <FooterWrapper>
@@ -127,6 +132,8 @@ function Footer() {
           <NavLink href="#projects">Upcoming Tours</NavLink>
           <NavLink href="#skills">Custom Trips</NavLink>
           <NavLink href="#contact">Contact</NavLink>
+          <Button style={{ color: "#111111",fontFamily: "Poppins, sans-serif",fontSize:"19.2px",paddingTop:"0px" }}
+          onClick={handleManageSiteClick}>Manage site</Button>
         </Nav>
         <ContactInfo>
           <ContactItem>
