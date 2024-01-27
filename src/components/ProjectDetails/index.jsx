@@ -209,6 +209,15 @@ const Skill = styled.div`
 
 const ProjectDetails = ({ openModal, setOpenModal }) => {
   const project = openModal?.project;
+  const formatFirestoreDate = (timestamp) => {
+const date = timestamp.toDate(); // Convert Firestore timestamp to JavaScript Date object
+return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+
+// Format start date and end date
+const formattedStartDate = formatFirestoreDate(project.startDate);
+const formattedEndDate = formatFirestoreDate(project.endDate);
   return (
     <Modal
       open={true}
@@ -225,65 +234,28 @@ const ProjectDetails = ({ openModal, setOpenModal }) => {
             }}
             onClick={() => setOpenModal({ state: false, project: null })}
           />
-          <Image src={project?.image} />
+          <Image src={project?.imageUrl} />
           <Title>{project?.title}</Title>
-          <Date>{project.date}</Date>
-          <ItemWrapper>
-            <Tags>
-              <Tag>{project.category}</Tag>
-            </Tags>
-            <Tags>
-              <Tag>{project.price}</Tag>
-            </Tags>
-          </ItemWrapper>
+          <Date>{formattedStartDate} - {formattedEndDate}</Date>
 
-          <Desc>{project?.description}</Desc>
           <b>Note:</b>
-          {project.PlsNote}
+          {project.note}
 
           <div style={{ marginTop: "10px" }}>
             <b>Includes:</b>
-            {project.tags?.map((tag, index) => (
-              <div>{tag} , </div>
-            ))}
+              <div>{project.includes} </div>
           </div>
           <div style={{ marginTop: "10px" }}>
             <b>Itinerary:</b>
-            {project.TourItinerary?.map((tag, index) => (
-              <div key={index}>
-                Day {tag.day} = {tag.destination}
-              </div>
-            ))}
+            <div>{project.itinerary}</div>
           </div>
 
           <ButtonGroup>
-            {project.id === 1 ? (
-              <a href={doc1} download>
+            {
+              <a href={project.uploadDocumentUrl} download>
                 Download Itinerary
               </a>
-            ) : project.id === 2 ? (
-              <a href={doc2} download>
-                Download Itinerary
-              </a>
-            ) : project.id === 3 ? (
-              <a href={doc3} download>
-                Download Itinerary
-              </a>
-            ) : project.id === 4 ? (
-              <a href={doc4} download>
-                Download Itinerary
-              </a>
-            ) : project.if === 5 ? (
-              <a href={doc5} download>
-                Download Itinerary
-              </a>
-            ) : project.id === 6 ? (
-              <a href={doc6} download>
-                Download Itinerary
-              </a>
-            ) : (
-              ""
-            )}
+           }
 
             <Button
               target="new"

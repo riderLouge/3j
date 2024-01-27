@@ -12,7 +12,7 @@ import {
 } from "./ProjectsStyle";
 import ProjectCard from "../Cards/projectCard";
 import { projects } from "../../data/constants";
-import db from "../../firebase";
+import { fireStoreAccess } from "../../firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 
 const Projects = ({ openModal, setOpenModal }) => {
@@ -20,8 +20,8 @@ const Projects = ({ openModal, setOpenModal }) => {
   const [toggle, setToggle] = useState("all");
 
   useEffect(() => {
-    onSnapshot(collection(db, "Tours"), (snapshot) => {
-      console.log(snapshot.docs.map((doc) => doc.data()));
+    onSnapshot(collection(fireStoreAccess, "Tours"), (snapshot) => {
+      setData(snapshot.docs.map((doc) => doc.data()));
     });
   }, []);
 
@@ -74,14 +74,14 @@ const Projects = ({ openModal, setOpenModal }) => {
         </ToggleButtonGroup>
         <CardContainer>
           {toggle === "all" &&
-            projects.map((project) => (
+            data.map((project) => (
               <ProjectCard
                 project={project}
                 openModal={openModal}
                 setOpenModal={setOpenModal}
               />
             ))}
-          {projects
+          {data
             .filter((item) => item.category == toggle)
             .map((project) => (
               <ProjectCard

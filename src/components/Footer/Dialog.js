@@ -1,9 +1,13 @@
 // Dialog.js
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import styled from "styled-components";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import firestore from "../../firebase";
+import { fireStoreAccess } from "../../firebase";
+import { fireStorageAccess } from "../../firebase";
+import { v4 } from "uuid";
+import { addDoc, collection, getDocs,onSnapshot } from "firebase/firestore";
+import { uploadBytes ,ref, getDownloadURL} from "firebase/storage";
 
 const DialogContainer = styled.div`
   position: fixed;
@@ -96,19 +100,39 @@ const Dialog = ({ open, onClose }) => {
   const handlePasswordSubmit = () => {
     // Your logic for validating the password
     if (password === "test") {
-      setView("content");
+      setView("addOrDeleteView");
+      setPassword("");
     } else {
       alert("Incorrect password. Please try again.");
+      setPassword("");
     }
   };
+
+  const onCloseDialog = () =>{
+      setView("password");
+      setPassword("");
+      onClose();
+  }
+
+  const handleAddButton = () =>{
+    setView("content");
+  }
+
+  const handleDeleteButton = () =>{
+    setView("delete");
+  }
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
+    const image  = ref(fireStorageAccess,`Imgs/${v4()}`);
+    uploadBytes(image,e.target.files[0]).then(data=>{
+      getDownloadURL(data.ref).then(urlData=>{ 
+        setImage(urlData);
+      });
+    });
   };
 
   const handleStartDateChange = (date) => {
@@ -132,7 +156,12 @@ const Dialog = ({ open, onClose }) => {
   };
 
   const handleUploadDocumentChange = (e) => {
-    setUploadDocument(e.target.value);
+    const document  = ref(fireStorageAccess,`Docs/${v4()}`);
+    uploadBytes(document,e.target.files[0]).then(data=>{
+      getDownloadURL(data.ref).then(urlData=>{ 
+        setUploadDocument(urlData);
+      });
+    });
   };
 
   const handleSave = async () => {
@@ -146,31 +175,74 @@ const Dialog = ({ open, onClose }) => {
     console.log("Includes:", includes);
     console.log("Itinerary:", itinerary);
     console.log("Upload Document:", uploadDocument);
-    console.log('Firestore instance:', firestore);
+
+    const startDateObject = new Date(startDate);
+    const endDateObject = new Date(endDate);
+
+    if (image == null || !image.trim() ) {
+      alert('image is required.');
+      return;
+    }
+
+    if (!title.trim() ) {
+      alert('Title is required.');
+      return;
+    }
+
+    if (startDate == null ) {
+      alert('Start Date must be valid dates.');
+      return;
+    }
+
+    if (endDate == null) {
+      alert('End Date must be valid dates.');
+      return;
+    }
+
+    // Validation for End Date being after Start Date
+    if (endDateObject <= startDateObject) {
+      alert('End Date must be after Start Date.');
+      return;
+    }
+
+    if (note == null || !note.trim() ) {
+      alert('Note is required.');
+      return;
+    }
+
+    if (includes == null || !includes.trim() ) {
+      alert('Includes is required.');
+      return;
+    }
+
+    if (itinerary == null || !itinerary.trim() ) {
+      alert('Itinerary is required.');
+      return;
+    }
+
+    if (uploadDocument == null || !uploadDocument.trim() ) {
+      alert('Upload document is required.');
+      return;
+    }
 
     // Save data to Firestore
-    const tripRef = firestore.collection('trips');
-    const newTripDoc = await tripRef.add({
-      title,
-      image,
-      startDate,
-      endDate,
-      note,
-      includes,
-      itinerary,
-      uploadDocument,
-    });
 
-    console.log('Trip saved with ID:', newTripDoc.id);
+    const tourRef = collection(fireStoreAccess,'Tours');
 
-    // Close the dialog
+   await addDoc(tourRef,{title:title,imageUrl:image,startDate:startDate,endDate:endDate,
+  note:note,includes:includes,itinerary:itinerary,uploadDocumentUrl:uploadDocument});
+
     onClose();
   } catch (error) {
     console.error('Error saving data:', error);
-    // Handle error appropriately (e.g., show an error message)
   }
 };
 
+ useEffect(() => {
+    onSnapshot(collection(fireStoreAccess, "trip1"), (snapshot) => {
+      console.log(snapshot.docs.map((doc) => doc.data()));
+    });
+  }, []);
 
   if (!open) return null;
 
@@ -186,7 +258,32 @@ const Dialog = ({ open, onClose }) => {
               onChange={handlePasswordChange}
             />
           </InputLabel>
-          <Button onClick={handlePasswordSubmit}>Submit</Button>
+           <div style={{display:"flex",justifyContent:"end"}}>
+          <Button style={{marginRight:"10px"}} onClick={handlePasswordSubmit}>Submit</Button>
+          <CloseButton onClick={onCloseDialog}>Close</CloseButton>
+          </div>
+        </>
+      )}
+
+       {view === "addOrDeleteView" && (
+        <>
+          <div style={{display:"flex",justifyContent:"center",fontWeight:"bold",paddingBottom:"20px"}}>
+          <InputLabel>Add / Delete Data</InputLabel>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between"}}>
+          <Button  onClick={handleAddButton}>Add</Button>
+          <Button  onClick={handleDeleteButton}>Delete</Button>
+          <CloseButton onClick={onCloseDialog}>Close</CloseButton>
+          </div>
+        </>
+      )}
+
+      {view === "delete" && (
+        <>
+          <InputLabel>Delete Data</InputLabel>
+          <div style={{display:"flex",justifyContent:"end"}}>
+          <CloseButton onClick={onCloseDialog}>Close</CloseButton>
+          </div>
         </>
       )}
 
@@ -263,7 +360,7 @@ const Dialog = ({ open, onClose }) => {
           </InputLabel>
 
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <CloseButton onClick={onClose}>Close</CloseButton>
+            <CloseButton onClick={onCloseDialog}>Close</CloseButton>
             <Button onClick={handleSave}>Save</Button>
           </div>
         </>

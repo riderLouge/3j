@@ -139,34 +139,31 @@ const Skill = styled.div`
 `;
 
 const ProjectCard = ({ project, setOpenModal }) => {
+
+const formatFirestoreDate = (timestamp) => {
+const date = timestamp.toDate(); // Convert Firestore timestamp to JavaScript Date object
+return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+
+// Format start date and end date
+const formattedStartDate = formatFirestoreDate(project.startDate);
+const formattedEndDate = formatFirestoreDate(project.endDate);
+
   return (
     <Card onClick={() => setOpenModal({ state: true, project: project })}>
-      <Image src={project.image} />
+      <Image src={project.imageUrl} />
       <Details>
         <Title>{project.title}</Title>
-        <Date>{project.date}</Date>
-        <Description>{project.description}</Description>
+        <Date>{formattedStartDate} - {formattedEndDate}</Date>
+        <Description>{project.note}</Description>
       </Details>
       <Skills>
         <b>Includes:</b>
         <ItemWrapper>
-          {project.tags?.map((tag, index) => (
-            <Skill>• {tag}</Skill>
-          ))}
+          {project.includes}
         </ItemWrapper>
       </Skills>
-      {/* <Tags>
-        {project.tags?.map((tag, index) => (
-          <Tag>{tag}</Tag>
-        ))}
-      </Tags>
-
-      <Members>
-        {project.member?.map((member) => (
-          <Avatar src={member.img} />
-        ))}
-      </Members> */}
-      {/* <Button>View Project</Button> */}
     </Card>
   );
 };

@@ -111,10 +111,6 @@ const Copyright = styled.p`
 function Footer() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleManageClick = () => {
-    setIsDialogOpen(true);
-  };
-
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
@@ -132,7 +128,8 @@ function Footer() {
           <NavLink href="#projects">Upcoming Tours</NavLink>
           <NavLink href="#skills">Custom Trips</NavLink>
           <NavLink href="#contact">Contact</NavLink>
-          <Button style={{ color: "#111111",fontFamily: "Poppins, sans-serif",fontSize:"19.2px",paddingTop:"0px" }}
+          <Button style={{ color: "#111111",fontFamily: "Poppins, sans-serif",fontSize:"19.2px",marginTop:"-8.5px",
+          textTransform:"none",fontWeight:"normal" }}
           onClick={handleManageSiteClick}>Manage site</Button>
         </Nav>
         <ContactInfo>
