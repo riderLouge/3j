@@ -2,12 +2,7 @@ import { CloseRounded, GitHub, LinkedIn } from "@mui/icons-material";
 import { Modal } from "@mui/material";
 import React from "react";
 import styled from "styled-components";
-import doc1 from "../../doc/doc1.pdf";
-import doc2 from "../../doc/doc2.pdf";
-import doc3 from "../../doc/doc3.pdf";
-import doc4 from "../../doc/doc4.pdf";
-import doc5 from "../../doc/doc5.pdf";
-import doc6 from "../../doc/doc6.pdf";
+
 
 const Container = styled.div`
   width: 100%;

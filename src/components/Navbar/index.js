@@ -33,7 +33,7 @@ const Navbar = () => {
               display: "flex",
               alignItems: "center",
               color: "black",
-              marginBottom: "20;",
+              marginBottom: "20px",
               cursor: "pointer",
             }}
           >

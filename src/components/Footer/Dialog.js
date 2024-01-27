@@ -6,8 +6,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { fireStoreAccess } from "../../firebase";
 import { fireStorageAccess } from "../../firebase";
 import { v4 } from "uuid";
-import { addDoc, collection, getDocs,onSnapshot } from "firebase/firestore";
+import { addDoc, collection, doc, onSnapshot, deleteDoc } from "firebase/firestore";
 import { uploadBytes ,ref, getDownloadURL} from "firebase/storage";
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 const DialogContainer = styled.div`
   position: fixed;
@@ -81,6 +82,20 @@ const CloseButton = styled(Button)`
   }
 `;
 
+const Image = styled.img`
+  width: 30px;
+  height: 30px;
+  background-color: ${({ theme }) => theme.white};
+  border-radius: 50%;
+  box-shadow: 0 0 16px 2px rgba(0, 0, 0, 0.3);
+`;
+
+const ContactIcon = styled.span`
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  color: ${({ theme }) => theme.primary};
+`;
+
 const Dialog = ({ open, onClose }) => {
   const [title, setTitle] = useState("");
   const [password, setPassword] = useState("");
@@ -92,6 +107,7 @@ const Dialog = ({ open, onClose }) => {
   const [itinerary, setItinerary] = useState("");
   const [uploadDocument, setUploadDocument] = useState("");
   const [view, setView] = useState("password"); // "password" or "content"
+  const [allData, setAllData] = useState([]);
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
@@ -227,22 +243,38 @@ const Dialog = ({ open, onClose }) => {
 
     // Save data to Firestore
 
-    const tourRef = collection(fireStoreAccess,'Tours');
+  const tourRef = collection(fireStoreAccess,'Tours');
 
-   await addDoc(tourRef,{title:title,imageUrl:image,startDate:startDate,endDate:endDate,
-  note:note,includes:includes,itinerary:itinerary,uploadDocumentUrl:uploadDocument});
-
-    onClose();
+  await addDoc(tourRef,{title:title,imageUrl:image,startDate:startDate,endDate:endDate,
+    note:note,includes:includes,itinerary:itinerary,uploadDocumentUrl:uploadDocument});
+  setView("password");
+  onClose();
   } catch (error) {
     console.error('Error saving data:', error);
   }
 };
 
- useEffect(() => {
-    onSnapshot(collection(fireStoreAccess, "trip1"), (snapshot) => {
-      console.log(snapshot.docs.map((doc) => doc.data()));
-    });
-  }, []);
+useEffect(() => { 
+  onSnapshot(collection(fireStoreAccess, "Tours"), (snapshot) => { 
+    setAllData(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+  }); 
+}, []);
+
+
+  const onDeleteIconClick = async (tripId) =>{
+    try {
+      // Access the specific document in the "trips" collection
+      const tripRef = doc(fireStoreAccess, 'Tours', tripId);
+
+      // Delete the document
+      await deleteDoc(tripRef);
+
+      // Update the state to reflect the deletion
+      setAllData((prevTrips) => prevTrips.filter((trip) => trip.id !== tripId));
+    } catch (error) {
+      console.error('Error deleting document:', error);
+    }
+  }
 
   if (!open) return null;
 
@@ -280,7 +312,26 @@ const Dialog = ({ open, onClose }) => {
 
       {view === "delete" && (
         <>
-          <InputLabel>Delete Data</InputLabel>
+          <InputLabel style={{display:"flex",fontWeight:"bold",paddingBottom:"20px"}}>Delete Data</InputLabel>
+          <div style={{paddingBottom:"20px"}}>
+            {allData.map((data, index) => (
+                    // Generate a div for each item in the array
+                    <div key={index} id={data.id} style={{ display: 'flex', alignItems: 'center', justifyContent:"space-between",paddingBottom:"10px" }}>
+                    <div style={{display:"flex",alignItems: "center"}}>
+                    <Image src={data?.imageUrl} />
+                    <div style={{marginLeft:"15px",marginRight:"15px"}}>{data.title}</div>
+                    </div>
+                   <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => onDeleteIconClick(data.id)}
+                    style={{ cursor: "pointer", display: "flex", alignItems: "center",background:"white",padding:"0"}}
+                  >
+                    <DeleteRoundedIcon style={{color:"red"}}/>
+                  </Button>
+                    </div>
+                  ))}
+          </div>
           <div style={{display:"flex",justifyContent:"end"}}>
           <CloseButton onClick={onCloseDialog}>Close</CloseButton>
           </div>
