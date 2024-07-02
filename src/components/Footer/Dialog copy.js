@@ -123,7 +123,7 @@ const Dialog = ({ open, onClose }) => {
 
   const handlePasswordSubmit = () => {
     // Your logic for validating the password
-    if (password === "Mallika12") {
+    if (password === "test") {
       setView("addOrDeleteView");
       setPassword("");
     } else {
@@ -205,7 +205,6 @@ const Dialog = ({ open, onClose }) => {
     const document = ref(fireStorageAccess, `Docs/${v4()}`);
     uploadBytes(document, e.target.files[0]).then((data) => {
       getDownloadURL(data.ref).then((urlData) => {
-        console.log(urlData, "00000");
         setUploadDocument(urlData);
       });
     });
@@ -254,10 +253,9 @@ const Dialog = ({ open, onClose }) => {
       }
 
       if (tripId) {
-        const tourRef = doc(fireStoreAccess, "Tours", tripId);
+        const tourRef = doc(fireStoreAccess, "Tours", tripId); // You need to define tripId
 
-        // Construct the data to be updated
-        const newData = {
+        await setDoc(tourRef, {
           title: title,
           imageUrl: image,
           startDate: startDates,
@@ -265,15 +263,8 @@ const Dialog = ({ open, onClose }) => {
           note: note,
           includes: includes,
           itinerary: itinerary,
-        };
-
-        // Update uploadDocumentUrl only if a new document is uploaded
-        if (uploadDocument) {
-          newData.uploadDocumentUrl = uploadDocument;
-        }
-        console.log(newData, "==");
-
-        await setDoc(tourRef, newData);
+          uploadDocumentUrl: uploadDocument,
+        });
         // Save data to Firestore for new document
       } else {
         const tourRef = collection(fireStoreAccess, "Tours");
@@ -334,21 +325,12 @@ const Dialog = ({ open, onClose }) => {
     // Populate state variables with the data of the trip to be edited
     setTitle(tripToEdit.title);
     setImage(tripToEdit.imageUrl);
-    console.log(tripToEdit.startDate);
-    setStartDates(
-      tripToEdit.startDate.map((data) => {
-        return formatFirestoreDate(data);
-      })
-    );
-    setEndDates(
-      tripToEdit.endDate.map((data) => {
-        return formatFirestoreDate(data);
-      })
-    );
+    setStartDates(tripToEdit.startDate);
+    setEndDates(tripToEdit.endDate);
     setNote(tripToEdit.note);
     setIncludes(tripToEdit.includes);
     setItinerary(tripToEdit.itinerary);
-    setUploadDocument("");
+    setUploadDocument(tripToEdit.uploadDocumentUrl);
 
     // Change the view to content to display the edit form
     setView("content");
@@ -358,9 +340,8 @@ const Dialog = ({ open, onClose }) => {
 
   const formatFirestoreDate = (timestamp) => {
     try {
+      console.log(timestamp, "===");
       const date = timestamp.toDate(); // Convert Firestore timestamp to JavaScript Date object
-      console.log(date, "===");
-
       return date;
     } catch (error) {
       console.error("Error converting timestamp to Date:", error);
@@ -546,7 +527,7 @@ const Dialog = ({ open, onClose }) => {
                 />
                 <InputLabel>End Date {index + 1}:</InputLabel>
                 <DatePicker
-                  selected={endDates[index]}
+                  selected={formatFirestoreDate(endDates[index])}
                   onChange={(date) => handleEndDateChange(date, index)}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="Select end date"

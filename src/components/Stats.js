@@ -18,15 +18,21 @@ const StatsSection = () => {
         >
           Our Achivements
         </Typography>
-        <Typography className="py-6">
-          I am Jai Muni, a passionate motovlogger hailing from Tamil Nadu.
-          Having completed thrilling journeys both in and outside India, I am
-          now venturing into the realm of adventure tourism with 3J Adventure
-          Tours LLP. Drawing from my extensive travel experiences, I invite you
-          to join this exciting journey. Buckle up for an adventure-filled
-          exploration and let 3J Adventure Tours be your gateway to the
-          unforgettable stories that I have lived and wants to share with you.
+        <Typography
+          paragraph
+          sx={{ marginBottom: "2rem", textAlign: "center", lineHeight: "2" }}
+        >
+          <span style={{ fontWeight: "bold" }}>I am Jai Muni</span>, a
+          passionate motovlogger hailing from Tamil Nadu. Having completed
+          thrilling journeys both in and outside India, I am now venturing into
+          <span style={{ fontWeight: "bold" }}>3J Adventure Tours LLP</span>.
+          Drawing from my extensive travel experiences, I invite you to join
+          this exciting journey. Buckle up for an adventure-filled exploration
+          and let <span style={{ fontWeight: "bold" }}>3J Adventure Tours</span>{" "}
+          be your gateway to the unforgettable stories that I have lived and
+          want to share with you.
         </Typography>
+
         <Grid container spacing={8} sx={{ marginTop: "20px" }}>
           {stats.map((stat) => (
             <Grid item xs={12} md={4} key={stat.id}>

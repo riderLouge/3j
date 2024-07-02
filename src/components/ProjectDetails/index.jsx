@@ -3,7 +3,6 @@ import { Modal } from "@mui/material";
 import React from "react";
 import styled from "styled-components";
 
-
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -205,14 +204,17 @@ const Skill = styled.div`
 const ProjectDetails = ({ openModal, setOpenModal }) => {
   const project = openModal?.project;
   const formatFirestoreDate = (timestamp) => {
-const date = timestamp.toDate(); // Convert Firestore timestamp to JavaScript Date object
-return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-};
+    const date = timestamp.toDate(); // Convert Firestore timestamp to JavaScript Date object
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
+  // Format start date and end date
+  console.log(project);
 
-// Format start date and end date
-const formattedStartDate = formatFirestoreDate(project.startDate);
-const formattedEndDate = formatFirestoreDate(project.endDate);
   return (
     <Modal
       open={true}
@@ -231,14 +233,28 @@ const formattedEndDate = formatFirestoreDate(project.endDate);
           />
           <Image src={project?.imageUrl} />
           <Title>{project?.title}</Title>
-          <Date>{formattedStartDate} - {formattedEndDate}</Date>
+          <Date>
+            {project.startDate &&
+              project.endDate &&
+              project.startDate.map((startDate, index) => (
+                <div key={index}>
+                  <p>
+                    {startDate ? formatFirestoreDate(startDate) : ""}{" "}
+                    {project.endDate[index] ? "-" : ""}{" "}
+                    {project.endDate[index]
+                      ? formatFirestoreDate(project.endDate[index])
+                      : ""}
+                  </p>
+                </div>
+              ))}{" "}
+          </Date>
 
           <b>Note:</b>
           {project.note}
 
           <div style={{ marginTop: "10px" }}>
             <b>Includes:</b>
-              <div>{project.includes} </div>
+            <div>{project.includes} </div>
           </div>
           <div style={{ marginTop: "10px" }}>
             <b>Itinerary:</b>
@@ -250,7 +266,7 @@ const formattedEndDate = formatFirestoreDate(project.endDate);
               <a href={project.uploadDocumentUrl} download>
                 Download Itinerary
               </a>
-           }
+            }
 
             <Button
               target="new"

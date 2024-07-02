@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useRef } from "react";
 import emailjs from "@emailjs/browser";
 import { Snackbar } from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div`
   display: flex;
@@ -124,30 +126,92 @@ const ContactButton = styled.input`
     box-shadow: 20px 20px 60px #1F2634, filter: brightness(1);
   }
 `;
+const Message = styled.div`
+  color: ${({ theme }) => (theme === "success" ? "green" : "green")};
+  font-size: 14px;
+  margin-top: 5px;
+`;
 
 const Contact = () => {
   //hooks
   const [open, setOpen] = React.useState(false);
+  const [message, setMessage] = React.useState(null); // State to hold success or failure message
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [userMessage, setUserMessage] = React.useState("");
+
   const form = useRef();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validation checks
+    if (!name.trim()) {
+      setMessage("Please enter your name.");
+      clearMessage();
+      return;
+    }
+
+    if (!/^\d{10}$/.test(email.trim())) {
+      setMessage("Please enter a valid 10-digit contact number.");
+      clearMessage();
+      return;
+    }
+
+    if (!userMessage.trim()) {
+      setMessage("Please enter your message.");
+      clearMessage();
+      return;
+    }
+
+    // If all validations pass, proceed to send the email
     emailjs
       .sendForm(
-        "service_k8djp9f",
+        "service_eqvn884",
         "template_bk4ittp",
         form.current,
         "gBCQ99M9O_qeu9mkX"
       )
-      .then(
-        (result) => {
-          setOpen(true);
-          form.current.reset();
-        },
-        (error) => {
-          console.log(error.text);
-        }
-      );
+      .then(() => {
+        setMessage("Email sent successfully!");
+        setName("");
+        setEmail("");
+        setUserMessage("");
+        clearMessage();
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error);
+        setMessage("Failed to send email. Please try again later.");
+        clearMessage();
+      });
+  };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   emailjs
+  //     .sendForm(
+  //       "service_eqvn884",
+  //       "template_bk4ittp",
+  //       form.current,
+  //       "gBCQ99M9O_qeu9mkX"
+  //     )
+  //     .then(() => {
+  //       setMessage("Email sent successfully!");
+  //       setName("");
+  //       setEmail("");
+  //       setUserMessage("");
+  //       clearMessage();
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error sending email:", error);
+  //       setMessage("Failed to send email. Please try again later.");
+  //       clearMessage();
+  //     });
+  // };
+  const clearMessage = () => {
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000); // Clear message after 5 seconds
   };
 
   return (
@@ -159,18 +223,29 @@ const Contact = () => {
         </Desc>
         <ContactForm ref={form} onSubmit={handleSubmit}>
           <ContactTitle>Email Me 🚀</ContactTitle>
-          <ContactInput placeholder="Your Name" name="from_name" />
-          <ContactInput placeholder="Your Contact Number" name="from_email" />
-          <ContactInputMessage placeholder="Message" rows="4" name="message" />
+          <ContactInput
+            placeholder="Your Name"
+            name="from_name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <ContactInput
+            placeholder="Your Contact Number"
+            name="from_email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <ContactInputMessage
+            placeholder="Message"
+            rows="4"
+            name="message"
+            value={userMessage}
+            onChange={(e) => setUserMessage(e.target.value)}
+          />
+          {message && <Message>{message}</Message>}
+
           <ContactButton type="submit" value="Send" />
         </ContactForm>
-        <Snackbar
-          open={open}
-          autoHideDuration={6000}
-          onClose={() => setOpen(false)}
-          message="Email sent successfully!"
-          severity="success"
-        />
       </Wrapper>
     </Container>
   );

@@ -6,40 +6,32 @@ import {
   Span,
   NavLogo,
   NavItems,
-  GitHubButton,
-  ButtonContainer,
   MobileIcon,
   MobileMenu,
-  MobileNavLogo,
   MobileLink,
   LogoImage,
 } from "./NavbarStyledComponent";
-import { DiCssdeck } from "react-icons/di";
 import { FaBars } from "react-icons/fa";
-import { Bio } from "../../data/constants";
-import { Close, CloseRounded } from "@mui/icons-material";
 import { useTheme } from "styled-components";
 import logo from "../../asset/logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const theme = useTheme();
   return (
     <Nav>
       <NavbarContainer>
         <NavLogo to="/">
-          <a
+          <div
             style={{
               display: "flex",
               alignItems: "center",
               color: "black",
-              marginBottom: "20px",
               cursor: "pointer",
             }}
           >
             <LogoImage src={logo} alt="Logo" />
             <Span>3J Adventure Tours LLP</Span>
-          </a>
+          </div>
         </NavLogo>
         <MobileIcon>
           <FaBars

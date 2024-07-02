@@ -60,7 +60,7 @@ const NavLink = styled.a`
   @media (max-width: 768px) {
     font-size: 1rem;
   }
-`;  
+`;
 
 const ContactInfo = styled.div`
   margin-top: 1.5rem;
@@ -115,9 +115,9 @@ function Footer() {
     setIsDialogOpen(false);
   };
 
-  const handleManageSiteClick= () =>{
-     setIsDialogOpen(true);
-  }
+  const handleManageSiteClick = () => {
+    setIsDialogOpen(true);
+  };
 
   return (
     <FooterContainer>
@@ -128,22 +128,32 @@ function Footer() {
           <NavLink href="#projects">Upcoming Tours</NavLink>
           <NavLink href="#skills">Custom Trips</NavLink>
           <NavLink href="#contact">Contact</NavLink>
-          <Button style={{ color: "#111111",fontFamily: "Poppins, sans-serif",fontSize:"19.2px",marginTop:"-8.5px",
-          textTransform:"none",fontWeight:"normal" }}
-          onClick={handleManageSiteClick}>Manage site</Button>
+          <Button
+            style={{
+              color: "#111111",
+              fontFamily: "Poppins, sans-serif",
+              fontSize: "19.2px",
+              marginTop: "-8.5px",
+              textTransform: "none",
+              fontWeight: "normal",
+            }}
+            onClick={handleManageSiteClick}
+          >
+            Manage site
+          </Button>
         </Nav>
         <ContactInfo>
           <ContactItem>
-            <ContactIcon>
-              <PhoneIcon />
-            </ContactIcon>
-            <ContactText>+1 123-456-7890</ContactText>
+            {/* <ContactIcon> */}
+            {/* <PhoneIcon /> */}
+            {/* </ContactIcon> */}
+            {/* <ContactText>+1 123-456-7890</ContactText> */}
           </ContactItem>
           <ContactItem>
             <ContactIcon>
               <EmailIcon />
             </ContactIcon>
-            <ContactText>info@3jadventuretours.com</ContactText>
+            <ContactText>3jadventuretours@gmail.com</ContactText>
           </ContactItem>
         </ContactInfo>
         <Copyright>

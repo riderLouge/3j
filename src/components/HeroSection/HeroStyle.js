@@ -1,10 +1,8 @@
 import styled from "styled-components";
-import _default from "../../themes/default";
-import pic1 from "../../asset/pic1.jpg";
 
 export const HeroContainer = styled.div`
-  background-image: url(${pic1}); /* Set the background image */\
-  background-position: center; /* Center the background image */
+  background-image: url(${(props) => props.imageUrl});
+  background-position: center;
 
   height: 950px;
   background-size: cover;

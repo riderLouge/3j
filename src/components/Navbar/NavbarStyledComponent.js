@@ -28,9 +28,10 @@ export const NavbarContainer = styled.div`
 `;
 
 export const LogoImage = styled.img`
-  width: 3rem; // Adjust the width of the logo as needed
+  width: 8rem; // Adjust the width of the logo as needed
   height: auto; // Maintain the aspect ratio
   margin-right: 8px; // Adjust the margin between the logo and text
+  margin-top: 60px;
 `;
 
 export const NavLogo = styled(LinkR)`

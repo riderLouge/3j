@@ -30,7 +30,7 @@ const Projects = ({ openModal, setOpenModal }) => {
       <Wrapper>
         <Title>Tours</Title>
         <Desc>Here is a list of tours currently available</Desc>
-        <ToggleButtonGroup>
+        {/* <ToggleButtonGroup>
           {toggle === "all" ? (
             <ToggleButton active value="all" onClick={() => setToggle("all")}>
               All
@@ -71,7 +71,7 @@ const Projects = ({ openModal, setOpenModal }) => {
               Other country
             </ToggleButton>
           )}
-        </ToggleButtonGroup>
+        </ToggleButtonGroup> */}
         <CardContainer>
           {toggle === "all" &&
             data.map((project) => (

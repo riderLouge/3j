@@ -41,6 +41,11 @@ const Card = styled.div`
   &:hover ${Button} {
     display: block;
   }
+  @media (max-width: 768px) {
+    width: 150px;
+    height: 110px;
+    padding: 5.5px 5.5px;
+  }
 `;
 
 const Image = styled.img`
@@ -139,30 +144,41 @@ const Skill = styled.div`
 `;
 
 const ProjectCard = ({ project, setOpenModal }) => {
+  const formatFirestoreDate = (timestamp) => {
+    const date = timestamp.toDate(); // Convert Firestore timestamp to JavaScript Date object
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
-const formatFirestoreDate = (timestamp) => {
-const date = timestamp.toDate(); // Convert Firestore timestamp to JavaScript Date object
-return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-};
-
-
-// Format start date and end date
-const formattedStartDate = formatFirestoreDate(project.startDate);
-const formattedEndDate = formatFirestoreDate(project.endDate);
-
+  console.log("project =", project.startDate);
   return (
     <Card onClick={() => setOpenModal({ state: true, project: project })}>
       <Image src={project.imageUrl} />
       <Details>
         <Title>{project.title}</Title>
-        <Date>{formattedStartDate} - {formattedEndDate}</Date>
+        <Date>
+          {project.startDate &&
+            project.endDate &&
+            project.startDate.map((startDate, index) => (
+              <div key={index}>
+                <p>
+                  {startDate ? formatFirestoreDate(startDate) : ""}{" "}
+                  {project.endDate[index] ? "-" : ""}{" "}
+                  {project.endDate[index]
+                    ? formatFirestoreDate(project.endDate[index])
+                    : ""}
+                </p>
+              </div>
+            ))}{" "}
+        </Date>
         <Description>{project.note}</Description>
       </Details>
       <Skills>
         <b>Includes:</b>
-        <ItemWrapper>
-          {project.includes}
-        </ItemWrapper>
+        <ItemWrapper>{project.includes}</ItemWrapper>
       </Skills>
     </Card>
   );
